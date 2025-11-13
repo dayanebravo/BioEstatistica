@@ -1,19 +1,5 @@
 ################ TEMA 05 - ESTRUTURAS DE DADOS ################################
 
-### VETORES
-vetor_numerico <- c(2, 9, 4, 8)
-print(vetor_numerico)
-
-vetor_caracteres <- c("1", "2", "3")
-print(typeof(vetor_caracteres)) 
-
-vetor_numerico <- as.numeric(vetor_caracteres)
-print(typeof(vetor_numerico))  
-
-
-
-
-
 ### Coerção de Tipos - Implícita
 # números e caracteres -> converte para caracteres
 num_char <- c(1, "a", TRUE)
@@ -24,9 +10,6 @@ print(typeof(num_char))
 num_logic <- c(1, TRUE, FALSE)
 print(typeof(num_logic))  
 print(num_logic)
-
-
-
 
 
 ### Coerção de Tipos - Explícita 
