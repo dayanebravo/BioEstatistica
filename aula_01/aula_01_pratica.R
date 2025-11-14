@@ -128,8 +128,8 @@ print(mult_AxB)
 
 # a multiplicação de matrizes NÃO É COMUTATIVA!
 C <- matrix(5:10, nrow = 3)
-print(A %*% C) # ERRO
-print(C %*% A)
+print(A %*% C) # ERRO  2x2 * 3x2
+print(C %*% A) # CORRETO 3x2 * 2x2
 
 
 # multiplicação elemento a elemento - NÃO USUAL
@@ -165,7 +165,7 @@ print(minha_lista)
 
 
 
-### INDECAÇÃO DE LISTAS
+### INDEXAÇÃO DE LISTAS
 # acessar os elementos das listas usando o operador $ 
 print(minha_lista$nome)
 
@@ -224,29 +224,6 @@ meu_df <- data.frame(
 print(meu_df)
 
 
-
-
-
-### INDEXAÇÃO DE DATAFRAMES
-# acessar colunas específicas usando o operador $ 
-print(meu_df$nome)
-
-# ou colchetes simples
-print(meu_df["nome"])
-
-
-# Acessar a segunda linha (informações da Maria)
-print(meu_df[2, ])   
-
-
-# Acessar a terceira linha, segunda coluna (idade do Pedro)
-print(meu_df[3, 2])
-
-
-# Acessar a terceira linha da coluna nome
-print(meu_df[3, "nome"])
-
-
 # Adicionar a coluna cidade
 meu_df$cidade <- c("Sao Paulo", "Curitiba", "Belo Horizonte")
 print(meu_df)
@@ -260,24 +237,60 @@ print(meu_df)
 
 
 
+# O R já vem com datasets. Vamos carregar um famoso: 'iris'
+data(iris)
+
 ### Funções úteis para df
 # Mostra as primeiras 6 linhas (ou todas, se houver menos)
-print(head(meu_df))
+print(head(iris))
 
 
 # Mostra as últimas 6 linhas (ou todas, se houver menos)
-print(tail(meu_df))
+print(tail(iris))
 
 
 # Quantidade de linhas
-print(nrow(meu_df))  
+print(nrow(iris))  
 
 
 # Quantidade de colunas
-print(ncol(meu_df))
+print(ncol(iris))
 
 
 # Retorna os nomes das colunas.
-print(names(meu_df))
+print(names(iris))
+
+# Mostra a ESTRUTURA (structure) do dataframe
+str(iris)  
+
+
+
+
+### INDEXAÇÃO DE DATAFRAMES
+# Acessa APENAS a coluna de espécies (são fatores!!!)
+print(iris$Species)
+
+# Acessa a primeira linha
+print(iris[1, ])
+
+# Acessa o comprimento da pétala (Petal.Length) da linha 100
+print(iris[100, "Petal.Length"])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
