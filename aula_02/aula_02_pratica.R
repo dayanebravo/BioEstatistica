@@ -123,15 +123,15 @@ print(percentil_90)
 idades <- c(12, 15, 12, 18, 20, 15, 12, 14, 18, 20)  
 
 # Tabela de frequência absoluta  
-freq_abs <- table(idades)  
+freq_abs <- table(idades)  # conta as ocorrências de cada valor único
 
 # Tabela de frequência relativa  
-freq_rel <- prop.table(freq_abs) * 100  
+freq_rel <- prop.table(freq_abs)*100  # divide cada contagem pelo total de elementos
 
 # Tabela combinada  
 tabela_frequencia <- data.frame(
   Idade = names(freq_abs),
-  Frequencia_Absoluta = as.vector(freq_abs),
+  Frequencia_Absoluta = as.vector(freq_abs),  # remove a formatação antiga
   Frequencia_Relativa = round(as.vector(freq_rel), 2)
 )
 
@@ -148,7 +148,8 @@ print(tabela_frequencia)
 dados_normais <- rnorm(100, mean = 120, sd = 10)  
 print(dados_normais)
 
-# Calcular probabilidade dos dados estarem entre 110 e 130  
+# Calcular probabilidade dos dados estarem entre 110 e 130
+# Pergunta: qual a chance de um equipamento durar entre 110 e 130 meses?
 prob <- pnorm(130, mean = 120, sd = 10) - pnorm(110, mean = 120, sd = 10)  
 print(prob)  
 
