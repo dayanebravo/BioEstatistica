@@ -30,16 +30,12 @@ print(mediana_outlier)
 
 
 
-
-
-
 ################ TEMA 2 – MEDIDAS DE DISPERSÃO ################################
 
 ### VARIANCIA
 idades <- c(25, 30, 35, 40, 45)
 variancia <- var(idades)  
 print(variancia)
-
 
 
 
@@ -56,15 +52,10 @@ print(desvio_padrao)
 
 
 
-
 ### AMPLITUDE
 idades <- c(25, 30, 35, 40, 45)
 amplitude <- max(idades) - min(idades)
 print(amplitude) 
-
-
-
-
 
 
 
@@ -82,14 +73,12 @@ print(media_geometrica)
 
 # Pela função
 # Instalar (se necessário) e carregar o pacote
-install.packages("psych")  # Apenas uma vez
+if(!require(psych)) install.packages('psych')
 library(psych)
 
 # Calcular a média geométrica
 media_geom <- geometric.mean(valores)
 print(media_geom) 
-
-
 
 
 
@@ -112,8 +101,6 @@ print(media_harmonica)
 idades <- c(20, 22, 25, 28, 30, 32, 35, 40, 45, 50)
 quartis <- quantile(idades, probs = c(0.25, 0.5, 0.75))
 print(quartis)
-
-
 
 
 
@@ -156,11 +143,12 @@ print(tabela_frequencia)
 
 
 ### Distribuição de Probabilidade Normal
-# Gerar dados aleatórios normalmente distribuídos  
+# Gerar 100 valores aleatórios normalmente distribuídos 
+# com média 120 e desvio padrão 10
 dados_normais <- rnorm(100, mean = 120, sd = 10)  
 print(dados_normais)
 
-# Calcular probabilidade entre 110 e 130  
+# Calcular probabilidade dos dados estarem entre 110 e 130  
 prob <- pnorm(130, mean = 120, sd = 10) - pnorm(110, mean = 120, sd = 10)  
 print(prob)  
 
@@ -261,4 +249,80 @@ pie(frequencia,
     labels = rotulos,
     col = c("lightcoral", "lightgreen", "lightblue"),
     main = "Distribuição de Tipos de Alergias (%)")
+
+
+
+
+
+
+################ Aplicação no dataset cats ####################################
+# Instalar apenas uma vez
+if(!require(MASS)) install.packages('MASS')
+
+# Carregar o pacote e o dataset
+library(MASS)
+data(cats) # Contém o sexo, peso corporal e peso do coração de gatos
+
+# A estrutura dos dados e as primeiras linhas
+str(cats)
+head(cats) 
+
+# As medidas de tendência central
+media_hwt <- mean(cats$Hwt)
+mediana_hwt <- median(cats$Hwt)
+print(paste("Média:", media_hwt))
+print(paste("Mediana:", mediana_hwt))
+
+# As medidas de dispersão
+variancia_hwt <- var(cats$Hwt)
+desvio_padrao_hwt <- sd(cats$Hwt)
+amplitude_hwt <- max(cats$Hwt) - min(cats$Hwt)
+print(paste("Desvio Padrão:", desvio_padrao_hwt))
+
+# Os quartis e percentis
+quartis_hwt <- quantile(cats$Hwt, probs = c(0.25, 0.5, 0.75))
+print("Quartis do Peso do Coração:")
+print(quartis_hwt)
+
+
+quartis_hwt_90 <- quantile(cats$Hwt, probs = c(0.90))
+print("Quantil do Peso do Coração:")
+print(quartis_hwt_90)
+
+
+# Tabelas de Frequência
+tabela_sexo <- table(cats$Sex)
+print("Frequência Absoluta (Sexo):")
+print(tabela_sexo)
+
+tabela_relativa_sexo <- prop.table(tabela_sexo) * 100
+print("Frequência Relativa (Sexo %):")
+print(tabela_relativa_sexo)
+
+### VISUALIZAÇÃO DOS DADOS
+# Histograma (distribuição do peso do coração)
+hist(cats$Hwt, 
+     main="Distribuição do Peso do Coração (gatos)", 
+     xlab="Peso do Coração (g)", 
+     col="lightblue")
+
+# Gráfico de Barras (contagem de machos/fêmeas)
+barplot(tabela_sexo, 
+        main="Número de Gatos por Sexo", 
+        ylab="Contagem", 
+        col=c("pink", "lightblue"))
+
+# Boxplot (comparando os grupos)
+boxplot(Hwt ~ Sex, data=cats, 
+        main="Peso do Coração vs. Sexo",
+        ylab="Peso do Coração (g)",
+        col=c("pink", "lightblue"))
+
+# Gráfico de Dispersão (relação entre variáveis)
+# Pergunta: Gatos mais pesados (Bwt) têm corações mais pesados (Hwt)?
+plot(cats$Bwt, cats$Hwt,
+     main="Peso Corporal vs. Peso do Coração",
+     xlab="Peso Corporal (kg)",
+     ylab="Peso do Coração (g)",
+     pch=16)
 
