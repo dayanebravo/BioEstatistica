@@ -1,8 +1,43 @@
+################ TEMA 1 – AMOSTRAGEM E TAMANHO AMOSTRAL ########################
+# Queremos detectar uma redução de 10 mmHg na pressão arterial (Delta).
+# Desvio padrão conhecido (sigma) = 15. Poder = 80%. Confiança = 95%.
+
+# MODO 1: Pela Fórmula
+alpha <- 0.05
+beta <- 0.20
+sigma <- 15
+delta <- 10
+
+Z_alpha <- qnorm(1 - alpha/2)
+Z_beta  <- qnorm(1 - beta)
+
+n_formula <- (2 * (Z_alpha + Z_beta)^2 * sigma^2) / delta^2
+cat("Tamanho amostral (Fórmula):", ceiling(n_formula), "por grupo.\n")
+
+# MODO 2: Função Nativa do R 
+calculo_r <- power.t.test(delta = delta, sd = sigma, 
+                          sig.level = alpha, power = 1-beta, 
+                          type = "two.sample")
+print(calculo_r)
+# Nota: O R usa uma distribuição t não-central (mais precisa que a normal Z),
+# por isso pode haver uma ligeira diferença decimal.
+
+
+
+
+
+
+
+
+
+
+
+
 ################ TEMA 2 – REGRESSÃO LINEAR ####################################
 
 ### Regressão linear simples
 "vamos prever o peso (lbs) a partir da altura (inches) de mulheres utilizando dados do conjunto “women” nativo do R:
-Y=β_0+β_1 ("altura" )+ε"
+Y=β_0+β_1(altura)+ε"
 
 # 1. Carregar os dados
 data(women)
@@ -38,8 +73,63 @@ ggplot(women, aes(x = height, y = weight)) +
 
 
 
+### Regressão Linear Múltipla
+"Vamos prever a Expectativa de Vida (anos) baseada em Murder (Homicídios),
+HS_Grad (Educação) e Frost (Clima) utilizando dados nativos 'state.x77':
+Y = β0 + β1(Murder) + β2(HS_Grad) + β3(Frost) + ε"
 
+# 1. Carregar e preparar os dados
+# state.x77 é uma matriz, convertemos para dataframe para usar nomes de colunas
+dados_estados <- as.data.frame(state.x77)
+# Renomeando colunas para facilitar (sem espaços)
+names(dados_estados)[names(dados_estados) == "Life Exp"] <- "Life_Exp"
+names(dados_estados)[names(dados_estados) == "HS Grad"] <- "HS_Grad"
 
+head(dados_estados[, c("Life_Exp", "Murder", "HS_Grad", "Frost")]) # visualização
+
+# 2. Ajuste do modelo de regressão linear múltipla
+modelo_estados <- lm(Life_Exp ~ Murder + HS_Grad + Frost, data = dados_estados)
+
+# 4. Extrair coeficientes estimados (betas)
+betas <- coef(modelo_estados)
+cat("\n--- Coeficientes Estimados ---\n")
+cat("Intercepto (β0):", round(betas["(Intercept)"], 3), "\n")
+cat("Murder (β1):    ", round(betas["Murder"], 3), "\n")
+cat("HS_Grad (β2):   ", round(betas["HS_Grad"], 3), "\n")
+cat("Frost (β3):     ", round(betas["Frost"], 3), "\n")
+
+# 5. Escrever o modelo final (Equação)
+cat("\nModelo estimado:\n")
+cat("Life_Exp =", round(betas[1], 2), 
+    "+ (", round(betas["Murder"], 2), "* Murder )",
+    "+ (", round(betas["HS_Grad"], 2), "* HS_Grad )",
+    "+ (", round(betas["Frost"], 2), "* Frost )\n")
+
+# 6. Previsão para um estado específico (Simulação)
+# Vamos criar um estado com alta violência, boa educação e muito frio
+novo_estado <- data.frame(Murder = 10, HS_Grad = 55, Frost = 120)
+
+prev <- predict(modelo_estados, newdata = novo_estado)
+cat("\nPrevisão para novo estado (Murder=10, HS=55, Frost=120):\n")
+cat("Expectativa de Vida =", round(prev, 2), "anos\n")
+
+# 7. Gráfico de aproximação do modelo com os dados
+# Obs: Na múltipla, plotamos Real vs Previsto (pois são 4 dimensões)
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+# Adicionando previsão ao dataset original para plotagem
+dados_estados$Previsto <- predict(modelo_estados)
+
+ggplot(dados_estados, aes(x = Life_Exp, y = Previsto)) +
+  geom_point(color = 'blue', size = 3) +
+  # Linha vermelha representa a previsão perfeita (x=y)
+  geom_abline(intercept = 0, slope = 1, color = 'red', linetype = "dashed", size = 1) +
+  labs(title = "Regressão Múltipla: Real vs Previsto",
+       subtitle = "Quanto mais perto da linha vermelha, melhor o modelo",
+       x = "Expectativa de Vida REAL (anos)",
+       y = "Expectativa de Vida PREVISTA (anos)") +
+  theme_minimal()
 
 
 
