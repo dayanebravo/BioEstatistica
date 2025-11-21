@@ -291,12 +291,20 @@ cat("\n--- Validação dos Pressupostos (p > 0.05 idealmente) ---\n")
 
 # Shapiro
 cat("Normalidade (Shapiro-Wilk): p =", round(sh$p.value, 4))
-if(sh$p.value > 0.05) cat(" [OK - Resíduos Normais]\n") else cat(" [Alerta - Resíduos não normais]\n")
+if(sh$p.value > 0.05) {
+  cat(" [OK - Resíduos Normais]\n") 
+} else {
+  cat(" [Alerta - Resíduos não normais]\n")
+}
 
 # Levene
 p_levene <- lev[1, "Pr(>F)"]
 cat("Homoscedasticidade (Levene): p =", round(p_levene, 4))
-if(p_levene > 0.05) cat(" [OK - Variâncias Homogêneas]\n") else cat(" [Alerta - Variâncias Heterogêneas]\n")
+if(p_levene > 0.05) {
+  cat(" [OK - Variâncias Homogêneas]\n") 
+} else {
+  cat(" [Alerta - Variâncias Heterogêneas]\n")
+}
 
 # MÉTRICAS
 cat("\n--- Interpretação das Métricas de Ajuste ---\n")
