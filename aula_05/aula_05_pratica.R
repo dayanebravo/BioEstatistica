@@ -3,8 +3,8 @@
 # Desvio padrão conhecido (sigma) = 15. Poder = 80%. Confiança = 95%.
 
 # MODO 1: Pela Fórmula
-alpha <- 0.05
-beta <- 0.20
+alpha <- 0.053 # 1-confiança
+beta <- 0.20 # 1-poder
 sigma <- 15
 delta <- 10
 
@@ -13,14 +13,15 @@ Z_beta  <- qnorm(1 - beta)
 
 n_formula <- (2 * (Z_alpha + Z_beta)^2 * sigma^2) / delta^2
 cat("Tamanho amostral (Fórmula):", ceiling(n_formula), "por grupo.\n")
+# o ceiling arredonda sempre para cima
 
 # MODO 2: Função Nativa do R 
 calculo_r <- power.t.test(delta = delta, sd = sigma, 
                           sig.level = alpha, power = 1-beta, 
                           type = "two.sample")
 print(calculo_r)
-# Nota: O R usa uma distribuição t não-central (mais precisa que a normal Z),
-# por isso pode haver uma ligeira diferença decimal.
+# Atenção: O R usa uma distribuição t não-central (mais precisa que a normal Z),
+# por isso pode haver uma diferença decimal.
 
 
 
@@ -36,7 +37,8 @@ print(calculo_r)
 ################ TEMA 2 – REGRESSÃO LINEAR ####################################
 
 ### Regressão linear simples
-"vamos prever o peso (lbs) a partir da altura (inches) de mulheres utilizando dados do conjunto “women” nativo do R:
+"vamos prever o peso (lbs) a partir da altura (inches) de mulheres utilizando 
+dados do conjunto “women” nativo do R:
 Y=β_0+β_1(altura)+ε"
 
 # 1. Carregar os dados
@@ -48,6 +50,8 @@ modelo_women <- lm(weight ~ height, data = women)
 
 # 4. Extrair coeficientes estimados (betas)
 betas <- coef(modelo_women)
+print(betas)
+
 cat("Intercepto (β0):", round(betas[1], 3), "\n")
 cat("Altura (β1):", round(betas["height"], 3), "\n")
 
@@ -65,7 +69,7 @@ cat("Peso =", round(prev, 2), "lbs\n")
 library(ggplot2)
 ggplot(women, aes(x = height, y = weight)) +
   geom_point(color = 'blue', size = 3) +
-  geom_smooth(method = 'lm', se = FALSE, color = 'red') +
+  geom_smooth(method = 'lm', color = 'red') +
   labs(title = "Regressão Linear: Peso ~ Altura",
        x = "Altura (inches)",
        y = "Peso (lbs)") +
@@ -74,43 +78,46 @@ ggplot(women, aes(x = height, y = weight)) +
 
 
 ### Regressão Linear Múltipla
-"Vamos prever a Expectativa de Vida (anos) baseada em Murder (Homicídios),
-HS_Grad (Educação) e Frost (Clima) utilizando dados nativos 'state.x77':
-Y = β0 + β1(Murder) + β2(HS_Grad) + β3(Frost) + ε"
+"Vamos prever a Life Exp (Expectativa de Vida) baseada em Murder (Homicídios),
+HS Grad (Educação) e Frost (Clima) utilizando dados nativos 'state.x77':
+Y = β0 + β1(Homicidios) + β2(Educacao) + β3(Clima) + ε"
 
 # 1. Carregar e preparar os dados
 # state.x77 é uma matriz, convertemos para dataframe para usar nomes de colunas
 dados_estados <- as.data.frame(state.x77)
-# Renomeando colunas para facilitar (sem espaços)
-names(dados_estados)[names(dados_estados) == "Life Exp"] <- "Life_Exp"
-names(dados_estados)[names(dados_estados) == "HS Grad"] <- "HS_Grad"
 
-head(dados_estados[, c("Life_Exp", "Murder", "HS_Grad", "Frost")]) # visualização
+# Renomeando colunas para facilitar (sem espaços)
+names(dados_estados)[names(dados_estados) == "Life Exp"] <- "Expectativa_Vida"
+names(dados_estados)[names(dados_estados) == "Murder"] <- "Homicidios"
+names(dados_estados)[names(dados_estados) == "HS Grad"] <- "Educacao"
+names(dados_estados)[names(dados_estados) == "Frost"] <- "Clima"
+
+head(dados_estados[, c("Expectativa_Vida", "Homicidios", "Educacao", "Clima")]) # visualização
 
 # 2. Ajuste do modelo de regressão linear múltipla
-modelo_estados <- lm(Life_Exp ~ Murder + HS_Grad + Frost, data = dados_estados)
+modelo_estados <- lm(Expectativa_Vida ~ Homicidios + Educacao + Clima, data = dados_estados)
 
 # 4. Extrair coeficientes estimados (betas)
 betas <- coef(modelo_estados)
 cat("\n--- Coeficientes Estimados ---\n")
 cat("Intercepto (β0):", round(betas["(Intercept)"], 3), "\n")
-cat("Murder (β1):    ", round(betas["Murder"], 3), "\n")
-cat("HS_Grad (β2):   ", round(betas["HS_Grad"], 3), "\n")
-cat("Frost (β3):     ", round(betas["Frost"], 3), "\n")
+cat("Homicidios (β1):", round(betas["Homicidios"], 3), "\n")
+cat("Educacao (β2):", round(betas["Educacao"], 3), "\n")
+cat("Clima (β3):", round(betas["Clima"], 3), "\n")
 
 # 5. Escrever o modelo final (Equação)
 cat("\nModelo estimado:\n")
-cat("Life_Exp =", round(betas[1], 2), 
-    "+ (", round(betas["Murder"], 2), "* Murder )",
-    "+ (", round(betas["HS_Grad"], 2), "* HS_Grad )",
-    "+ (", round(betas["Frost"], 2), "* Frost )\n")
+cat("Expectativa_Vida =", round(betas[1], 2), 
+    "+ (", round(betas["Homicidios"], 2), "* Homicidios )",
+    "+ (", round(betas["Educacao"], 2), "* Educacao )",
+    "+ (", round(betas["Clima"], 2), "* Clima )\n")
 
 # 6. Previsão para um estado específico (Simulação)
 # Vamos criar um estado com alta violência, boa educação e muito frio
-novo_estado <- data.frame(Murder = 10, HS_Grad = 55, Frost = 120)
+novo_estado <- data.frame(Homicidios = 10, Educacao = 55, Clima = 120)
 
 prev <- predict(modelo_estados, newdata = novo_estado)
-cat("\nPrevisão para novo estado (Murder=10, HS=55, Frost=120):\n")
+cat("\nPrevisão para novo estado (Homicidios=10, Educacao=55, Clima=120):\n")
 cat("Expectativa de Vida =", round(prev, 2), "anos\n")
 
 # 7. Gráfico de aproximação do modelo com os dados
@@ -121,7 +128,7 @@ library(ggplot2)
 # Adicionando previsão ao dataset original para plotagem
 dados_estados$Previsto <- predict(modelo_estados)
 
-ggplot(dados_estados, aes(x = Life_Exp, y = Previsto)) +
+ggplot(dados_estados, aes(x = Expectativa_Vida, y = Previsto)) +
   geom_point(color = 'blue', size = 3) +
   # Linha vermelha representa a previsão perfeita (x=y)
   geom_abline(intercept = 0, slope = 1, color = 'red', linetype = "dashed", size = 1) +
@@ -136,59 +143,80 @@ ggplot(dados_estados, aes(x = Life_Exp, y = Previsto)) +
 
 
 ################ TEMA 3 – REGRESSÃO LOGÍSTICA #################################
-# Simulação de dados - Regressão Logística 
-set.seed(123)
-n <- 200
-idade <- rnorm(n, mean = 60, sd = 12)   # idade média de 60 anos
-comorb <- rbinom(n, 1, prob = 0.4)      # 40% com comorbidades
+# vamos prever se um carro é MANUAL (am=1) ou AUTOMÁTICO (am=0)
+# Preditores selecionados do Dataset: 'mtcars': 
+#   mpg (Milhas por galão - Consumo)
+#   hp  (Horsepower - Potência)
 
-# Modelo artificial para gerar a probabilidade de óbito
-logit_p <- -5 + 0.05*idade + 1.2*comorb
-p <- 1/(1 + exp(-logit_p))
+# 1. Carregar dados
+data(mtcars)
+# Visualizar a distribuição da variável resposta
+table(mtcars$am) # 0 = Auto, 1 = Manual
 
-# Variável resposta: óbito (0 = não, 1 = sim)
-obito <- rbinom(n, 1, prob = p)
+# 2. Ajuste do modelo logístico
+# family = binomial é o que define a regressão logística
+modelo_logistico <- glm(am ~ mpg + hp, data = mtcars, family = binomial)
 
-# Ajuste do modelo logístico
-modelo_logistico <- glm(obito ~ idade + comorb, family = binomial)
-
-# Extrair coeficientes estimados
+# 3. Extrair coeficientes estimados (Log-Odds)
 betas <- coef(modelo_logistico)
 
-# Calcular Odds Ratios e IC 95%
+# 4. Calcular Odds Ratios (OR) e Intervalos de Confiança (IC 95%)
+# Exponenciamos os coeficientes para transformar Log-Odds em Odds Ratio
 odds <- exp(betas)
-odds_ci <- exp(confint(modelo_logistico))
+print(odds)
+odds_ci <- exp(confint(modelo_logistico)) 
 
-# Interpretação automática dos coeficientes
-cat("Coeficientes do modelo e interpretação (Odds Ratio):\n")
+# 5. Interpretação automática dos coeficientes
+cat("\n--- Coeficientes do modelo e interpretação (Odds Ratio) ---\n")
+cat("Resposta: Probabilidade de ser MANUAL (am=1)\n\n")
+
 for(i in 1:length(betas)){
-  cat(names(betas)[i], "\n")
-  cat("  Beta =", round(betas[i], 3), "\n")
+  nome_var <- names(betas)[i]
+  
+  cat(nome_var, "\n")
+  cat("  Beta (Log-Odds) =", round(betas[i], 3), "\n")
   cat("  Odds Ratio (OR) =", round(odds[i], 3), "\n")
-  cat("  IC 95% OR =", paste0("(", round(odds_ci[i,1],3), ", ", round(odds_ci[i,2],3), ")"), "\n")
-  if(odds[i] > 1){
-    cat("  Interpretação: aumento da chance de óbito\n\n")
+  
+  # Tratamento de erro caso o IC seja muito amplo (comum em datasets pequenos)
+  ic_inf <- round(odds_ci[i,1], 3)
+  ic_sup <- round(odds_ci[i,2], 3)
+  cat("  IC 95% OR =", paste0("(", ic_inf, ", ", ic_sup, ")"), "\n")
+  
+  if(nome_var == "(Intercept)"){
+    cat("  (Intercepto não tem interpretação direta de efeito)\n\n")
+  } else if(odds[i] > 1){
+    cat("  Interpretação: Aumenta a chance de ser Manual.\n")
+    cat("  (Para cada unidade extra, a chance multiplica por", round(odds[i], 2), ")\n\n")
   } else if(odds[i] < 1){
-    cat("  Interpretação: efeito protetor (redução da chance)\n\n")
+    cat("  Interpretação: Reduz a chance de ser Manual (Favorece Automático).\n")
+    cat("  (Para cada unidade extra, a chance multiplica por", round(odds[i], 2), ")\n\n")
   } else {
-    cat("  Interpretação: sem efeito\n\n")
+    cat("  Interpretação: Sem efeito na escolha do câmbio.\n\n")
   }
 }
 
-# Função para previsão automática de probabilidade e classificação
-previsao_paciente <- function(modelo, paciente){
-  prob <- predict(modelo, newdata = paciente, type = "response")
-  cat("Previsão para paciente:\n")
-  print(paciente)
-  cat("  Probabilidade de óbito =", round(prob, 2), "\n")
-  # Classificação automática
-  classe <- ifelse(prob >= 0.5, "Alto risco", "Baixo risco")
-  cat("  Classificação predita:", classe, "\n\n")
+# 6. Função para previsão automática de probabilidade e classificação
+previsao_carro <- function(modelo, carro_novo){
+  # type="response" retorna a probabilidade (0 a 1) em vez do logit
+  prob <- predict(modelo, newdata = carro_novo, type = "response")
+  
+  cat("--- Previsão para Novo Carro ---\n")
+  print(carro_novo)
+  cat("  Probabilidade de ser Manual =", round(prob * 100, 2), "%\n")
+  
+  # Classificação (Cutoff padrão de 0.5)
+  classe <- ifelse(prob >= 0.5, "Câmbio Manual", "Câmbio Automático")
+  cat("  Classificação Predita:", classe, "\n\n")
 }
 
-# Exemplo: paciente de 60 anos com comorbidade
-novo_paciente <- data.frame(idade = 60, comorb = 1)
-previsao_paciente(modelo_logistico, novo_paciente)
+# 7. Exemplos de Previsão
+# Exemplo A: Carro muito econômico (30 mpg) e potência baixa (70 hp) -> Típico popular manual
+carro_economico <- data.frame(mpg = 30, hp = 70)
+previsao_carro(modelo_logistico, carro_economico)
+
+# Exemplo B: Carro com alto consumo (10 mpg) e muito potente (250 hp) -> Típico V8 automático
+carro_potente <- data.frame(mpg = 10, hp = 250)
+previsao_carro(modelo_logistico, carro_potente)
 
 
 
@@ -200,67 +228,115 @@ previsao_paciente(modelo_logistico, novo_paciente)
 
 
 ################ TEMA 5 – ANOVA PARA DOIS FATORES #############################
-"Vamos analisar os níveis de colesterol em três grupos de 200 pacientes. 
-Utilizaremos a ANOVA de dois fatores para analisar o efeito da dieta e do sexo 
-nos níveis de colesterol"
+# Efeito de suplementos no crescimento de dentes (len) do Dataset 'ToothGrowth'
+# Fator 1: Suplemento (supp) -> OJ (Suco de Laranja) x VC (Ácido Ascórbico)
+# Fator 2: Dose (dose) -> 0.5, 1.0, 2.0 mg/dia
+# Analisar se o tipo de suplemento e a dose (e a interação entre eles)
+# afetam o comprimento do dente.
 
-set.seed(123)
-sexo <- factor(rep(c("Masculino", "Feminino"), each = 30))
-dieta <- factor(rep(c("Dieta1", "Dieta2", "Dieta3"), times = 20))
+cat("=== ANOVA DOIS FATORES - Dataset: ToothGrowth ===\n\n")
 
-# Criando médias diferentes para simular efeitos principais e interação
-colesterol <- rnorm(60, mean = 200, sd = 10) +
-  ifelse(dieta == "Dieta2", 10, ifelse(dieta == "Dieta3", 20, 0)) +
-  ifelse(sexo == "Feminino", 5, 0) +
-  ifelse(dieta == "Dieta3" & sexo == "Feminino", 10, 0)
+# Preparação dos Dados
+data(ToothGrowth)
+dados <- ToothGrowth
 
-dados2 <- data.frame(sexo, dieta, colesterol)
+# IMPORTANTE: A dose vem como numérica, precisamos converter para Fator (categoria)
+# para que a ANOVA entenda como grupos distintos, não como regressão linear.
+dados$dose <- as.factor(dados$dose)
 
-# 1) Modelo ANOVA de dois fatores com interação
-modelo2 <- aov(colesterol ~ sexo * dieta, data = dados2)
-anova_tab2 <- summary(modelo2)
+cat("Estrutura dos dados:\n")
+str(dados)
 
-# 2) Validação dos pressupostos
-sh <- shapiro.test(residuals(modelo2))
-lev <- car::leveneTest(colesterol ~ sexo * dieta, data = dados2)
+# 1) Modelo ANOVA de dois fatores com interação (*)
+# Y ~ Fator1 * Fator2
+modelo_anova <- aov(len ~ supp * dose, data = dados)
+anova_tab <- summary(modelo_anova)
 
-# 3) Resultados da ANOVA
-print(anova_tab2)
 
-# 4) Medidas de ajuste (R², R² ajustado, RMSE e MAE)
-SQT2 <- sum((dados2$colesterol - mean(dados2$colesterol))^2)
-SQE2 <- sum(residuals(modelo2)^2)
-R2 <- 1 - SQE2/SQT2
-n2   <- nrow(dados2)
-k2   <- length(coef(modelo2))  # número de parâmetros estimados
-R2_adj <- 1 - (SQE2/(n2 - k2)) / (SQT2/(n2 - 1))
+# 2) Resultados da ANOVA
+cat("\n--- Tabela ANOVA ---\n")
+print(anova_tab)
 
-# RMSE e MAE
-RMSE <- sqrt(mean(residuals(modelo2)^2))
-MAE  <- mean(abs(residuals(modelo2)))
 
-# INTERPRETAÇÃO AUTOMÁTICA DAS MÉTRICAS
-cat("\n INTERPRETAÇÃO DAS MÉTRICAS DE AJUSTE \n")
-cat("- R² =", round(R2, 3), " O modelo explica aproximadamente", round(R2*100, 1), "% da variabilidade dos dados.\n")
-cat("- R² Ajustado =", round(R2_adj, 3), " Considerando o número de grupos e tamanho da amostra, o ajuste realista é de", round(R2_adj*100, 1), "%.\n")
-cat("- RMSE =", round(RMSE, 2), " O erro quadrático médio é de", round(RMSE, 2), "unidades de colesterol. Valores menores indicam melhor ajuste.\n")
-cat("- MAE =", round(MAE, 2), " Em média, o erro absoluto é de", round(MAE, 2), "unidades de colesterol.\n")
+# 3) Preparação para Validação dos pressupostos
+# Normalidade dos resíduos
+sh <- shapiro.test(residuals(modelo_anova))
 
-# 5) Interpretação automática
-cat("\nVALIDAÇÃO DOS PRESSUPOSTOS (p > 0.05) \n")
-cat("Normalidade (Shapiro-Wilk): p =", round(sh$p.value, 4), "\n")
-cat("Homoscedasticidade (Levene): p =", round(lev[1, "Pr(>F)"], 4), "\n")
-cat("Independência: pressuposta pelo delineamento.\n\n")
+# Homogeneidade das variâncias (Levene)
+if(!require(car)) install.packages("car")
+library(car)
+lev <- leveneTest(len ~ supp * dose, data = dados)
 
-pvals <- anova_tab2[[1]][["Pr(>F)"]]
-names(pvals) <- rownames(anova_tab2[[1]])
 
-cat("INTERPRETAÇÃO FINAL\n")
-if (pvals[1] < 0.05) cat("- Há efeito principal de SEXO (p =", round(pvals[1], 4), ")\n")
-if (pvals[2] < 0.05) cat("- Há efeito principal de DIETA (p =", round(pvals[2], 4), ")\n")
-if (pvals[3] < 0.05) cat("- Há efeito de INTERAÇÃO sexo*dieta (p =", round(pvals[3], 4), ")\n")
-if (all(pvals > 0.05)) cat("- Nenhum efeito significativo foi identificado.\n")
+# 4) Preparação para Medidas de ajuste (R², R² ajustado, RMSE e MAE)
+# Cálculo manual das métricas de performance do modelo
+SQT <- sum((dados$len - mean(dados$len))^2)   # Soma Quadrados Total
+SQE <- sum(residuals(modelo_anova)^2)         # Soma Quadrados Erro (Resíduos)
 
+# R² (Coeficiente de Determinação)
+R2 <- 1 - SQE/SQT
+
+# R² Ajustado
+n <- nrow(dados)
+k <- length(coef(modelo_anova)) # número de coeficientes estimados
+R2_adj <- 1 - (SQE/(n - k)) / (SQT/(n - 1))
+
+# RMSE (Raiz do Erro Quadrático Médio) e MAE (Erro Absoluto Médio)
+RMSE <- sqrt(mean(residuals(modelo_anova)^2))
+MAE  <- mean(abs(residuals(modelo_anova)))
+
+
+# 5) Interpretação automática dos Testes e Pressupostos e Métricas
+cat("\n--- Validação dos Pressupostos (p > 0.05 idealmente) ---\n")
+
+# Shapiro
+cat("Normalidade (Shapiro-Wilk): p =", round(sh$p.value, 4))
+if(sh$p.value > 0.05) cat(" [OK - Resíduos Normais]\n") else cat(" [Alerta - Resíduos não normais]\n")
+
+# Levene
+p_levene <- lev[1, "Pr(>F)"]
+cat("Homoscedasticidade (Levene): p =", round(p_levene, 4))
+if(p_levene > 0.05) cat(" [OK - Variâncias Homogêneas]\n") else cat(" [Alerta - Variâncias Heterogêneas]\n")
+
+# MÉTRICAS
+cat("\n--- Interpretação das Métricas de Ajuste ---\n")
+cat("- R² =", round(R2, 3), ": O modelo explica", round(R2*100, 1), "% da variabilidade no crescimento do dente.\n")
+cat("- R² Ajustado =", round(R2_adj, 3), ": Ajuste realista considerando a complexidade do modelo (", round(R2_adj*100, 1), "%).\n")
+cat("- RMSE =", round(RMSE, 2), ": O erro médio do modelo é de aprox.", round(RMSE, 2), "unidades de comprimento.\n")
+
+
+# Interpretação Final da Significância (P-values da ANOVA)
+pvals <- anova_tab[[1]][["Pr(>F)"]]
+print(pvals)
+# Removemos o último NA (que corresponde aos Resíduos na tabela)
+pvals <- pvals[!is.na(pvals)]
+names(pvals) <- rownames(anova_tab[[1]])[1:3] # supp, dose, supp:dose
+print(pvals)
+
+cat("\n--- Interpretação Final dos Efeitos ---\n")
+# Efeito da Interação (Geralmente olhamos primeiro)
+p_interacao <- pvals[3]
+if (p_interacao < 0.05) {
+  cat("[IMPORTANTE] Há INTERAÇÃO significativa (p =", round(p_interacao, 4), ").\n")
+  cat("Isso significa que o efeito da Dose depende do tipo de Suplemento (e vice-versa).\n")
+  cat("Não se deve analisar os efeitos principais isoladamente.\n")
+} else {
+  cat("Não há interação significativa (p > 0.05). Os efeitos são independentes.\n")
+  
+  # Se não há interação, olhamos os efeitos PRINCIPAIS
+  if (pvals[1] < 0.05) cat("- Há efeito principal de SUPLEMENTO (p =", round(pvals[1], 4), "). Um tipo funciona melhor que o outro.\n")
+  if (pvals[2] < 0.05) cat("- Há efeito principal de DOSE (p < 0.0001). Aumentar a dose altera o crescimento.\n")
+}
+
+# 6) Visualização Rápida (Boxplot)
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(dados, aes(x = dose, y = len, fill = supp)) +
+  geom_boxplot() +
+  labs(title = "Crescimento dos Dentes: Dose vs Suplemento",
+       x = "Dose (mg/dia)", y = "Comprimento do Dente", fill = "Suplemento") +
+  theme_minimal()
 
 
 
