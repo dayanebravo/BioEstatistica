@@ -5,7 +5,7 @@
 # de 10 pacientes.
 data(sleep)
 str(sleep)
-# Vamos pegar apenas a variação do tempo (horas) de sono (extra) do Grupo 1
+# Vamos pegar apenas a variação do tempo (extra) de sono do Grupo 1
 grupo1 <- sleep$extra[sleep$group == 1]
 
 # O R calcula o IC automaticamente na função t.test
