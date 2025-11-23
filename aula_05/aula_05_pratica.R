@@ -3,7 +3,7 @@
 # Desvio padrão conhecido (sigma) = 15. Poder = 80%. Confiança = 95%.
 
 # MODO 1: Pela Fórmula
-alpha <- 0.053 # 1-confiança
+alpha <- 0.05 # 1-confiança
 beta <- 0.20 # 1-poder
 sigma <- 15
 delta <- 10
@@ -233,8 +233,6 @@ previsao_carro(modelo_logistico, carro_potente)
 # Fator 2: Dose (dose) -> 0.5, 1.0, 2.0 mg/dia
 # Analisar se o tipo de suplemento e a dose (e a interação entre eles)
 # afetam o comprimento do dente.
-
-cat("=== ANOVA DOIS FATORES - Dataset: ToothGrowth ===\n\n")
 
 # Preparação dos Dados
 data(ToothGrowth)
