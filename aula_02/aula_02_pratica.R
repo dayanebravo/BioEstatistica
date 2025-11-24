@@ -278,7 +278,9 @@ print(paste("Mediana:", mediana_hwt))
 variancia_hwt <- var(cats$Hwt)
 desvio_padrao_hwt <- sd(cats$Hwt)
 amplitude_hwt <- max(cats$Hwt) - min(cats$Hwt)
+print(paste("Variância:", variancia_hwt))
 print(paste("Desvio Padrão:", desvio_padrao_hwt))
+print(paste("Amplitude:", amplitude_hwt))
 
 # Os quartis e percentis
 quartis_hwt <- quantile(cats$Hwt, probs = c(0.25, 0.5, 0.75))
@@ -287,7 +289,7 @@ print(quartis_hwt)
 
 
 quartis_hwt_90 <- quantile(cats$Hwt, probs = c(0.90))
-print("Quantil do Peso do Coração:")
+print("Quantil 90 do Peso do Coração:")
 print(quartis_hwt_90)
 
 
@@ -315,14 +317,14 @@ barplot(tabela_sexo,
 
 # Boxplot (comparando os grupos)
 boxplot(Hwt ~ Sex, data=cats, 
-        main="Peso do Coração vs. Sexo",
+        main="Peso do Coração x Sexo",
         ylab="Peso do Coração (g)",
         col=c("pink", "lightblue"))
 
 # Gráfico de Dispersão (relação entre variáveis)
 # Pergunta: Gatos mais pesados (Bwt) têm corações mais pesados (Hwt)?
 plot(cats$Bwt, cats$Hwt,
-     main="Peso Corporal vs. Peso do Coração",
+     main="Peso Corporal x Peso do Coração",
      xlab="Peso Corporal (kg)",
      ylab="Peso do Coração (g)",
      pch=16)
