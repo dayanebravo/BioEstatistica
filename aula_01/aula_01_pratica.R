@@ -7,7 +7,7 @@ print(typeof(num_char))
 
 
 # números e valores lógicos -> converte para números
-num_logic <- c(1, TRUE, FALSE)
+num_logic <- c(5, TRUE, FALSE)
 print(typeof(num_logic))  
 print(num_logic)
 
@@ -275,21 +275,6 @@ print(iris[1, ])
 
 # Acessa o comprimento da pétala (Petal.Length) da linha 100
 print(iris[100, "Petal.Length"])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
