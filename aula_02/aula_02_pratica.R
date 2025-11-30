@@ -46,8 +46,8 @@ desvio_padrao <- sd(idades)
 print(desvio_padrao)
 
 # lembrando que a variancia é o quadrado do desvio padrão
-desvio_padrao <- sqrt(variancia)
-print(desvio_padrao)
+desvio_padrao_2 <- sqrt(variancia)
+print(desvio_padrao_2)
 
 
 

@@ -1,14 +1,51 @@
 ################ TEMA 2 - TEOREMA DE BAYES ####################################
-# Cenário: Teste para uma doença rara com as seguintes condições
+# EXEMPLO 1: Você projetou um algoritmo para detectar Fibrilação Ventricular (FV)
+# em um monitor de UTI.
+#
+# - Sensibilidade (S): 99% (O algoritmo é excelente para detectar a parada cardíaca)
+# - Especificidade (E): 95% (O algoritmo se confunde com movimentos do paciente 5% das vezes)
+# - Prevalência (P): 0.5% (A chance de um paciente ter uma FV em um dado momento é muito baixa)
+
+S_monitor <- 0.99  # Sensibilidade (Alta segurança)
+E_monitor <- 0.95  # Especificidade (5% de falsos alarmes por artefatos de movimento)
+P_monitor <- 0.005 # 0.5% (Evento crítico, mas raro no tempo contínuo)
+
+# Cálculo da Probabilidade do Alarme Disparar (P(B))
+# Alarme toca = (É parada cardíaca E detectou) + (NÃO é parada E alarme errou)
+prob_alarme_tocar <- (S_monitor * P_monitor) + ((1 - E_monitor) * (1 - P_monitor))
+print(prob_alarme_tocar)
+
+# Teorema de Bayes: Dado que o alarme tocou, qual a chance de ser REALMENTE uma FV?
+# VPP = (Sensibilidade * Prevalência) / Probabilidade do Alarme Tocar
+vpp_monitor <- (S_monitor * P_monitor) / prob_alarme_tocar
+
+# Exibindo o resultado
+cat("\n--- Análise de Fadiga de Alarmes ---\n")
+cat("Probabilidade do alarme disparar:", round(prob_alarme_tocar * 100, 2), "%\n")
+cat("Se o alarme tocar, a chance de ser uma emergência real é de apenas:", round(vpp_monitor * 100, 2), "%\n")
+
+# Interpretação:
+# De cada 100 alarmes que tocam, apenas cerca de 9 são reais e 91 são falsos positivos
+# Isso explica por que a equipe médica às vezes demora a reagir.
+# Desafio de Engenharia: Aumentar a especificidade (filtragem de ruído)
+
+
+
+
+
+
+
+# EXEMPLO 2: Teste para uma doença rara com as seguintes condições
 # Sensibilidade (S): 95% | Especificidade (E): 90% | Prevalência (P): 1%
 
 S <- 0.95  # P(Positivo | Doente)
 E <- 0.90
-P <- 0.01  # P(Doente) - doença rara
+P <- 0.01  # P(Doente) -> doença rara!!!
 
 # Probabilidade de Teste Positivo (Total)
 # P(Positivo) = (Doentes detectados) + (Sadios falsamente detectados)
 prob_teste_positivo <- (S * P) + ((1 - E) * (1 - P))
+print(prob_teste_positivo)
 
 # Valor Preditivo Positivo (VPP) - Teorema de Bayes
 # P(Doente | Positivo) -> P(B∣A)=(P(A∣B)⋅P(B))/P(A)
@@ -16,6 +53,13 @@ vpp <- (S * P) / prob_teste_positivo
 
 print(paste("A chance real de doença dado um teste positivo é:", round(vpp*100, 2), "%"))
 # Observe que a prevalência baixa atrapalha a confiabilidade do teste!
+
+
+
+
+
+
+
 
 
 
@@ -96,6 +140,10 @@ print(resultado_completo)
 ################ TEMA 4 – FUNÇÕES DENSIDADE E DISTRIBUIÇÃO ####################
 
 ### Função densidade de probabilidade (PDF)
+# Você está analisando dados de uma população saudável para calibrar um sensor.
+# A literatura médica indica que a pressão sistólica segue uma distribuição Normal
+# com Média = 120 mmHg e Desvio Padrão = 10 mmHg.
+
 # Criando uma sequência de valores x
 x <- seq(80, 160, length.out = 100)
 
@@ -103,10 +151,15 @@ x <- seq(80, 160, length.out = 100)
 densidade <- dnorm(x, mean = 120, sd = 10)
 
 # Plotando a curva de densidade
-plot(x, densidade, type = "l", col = "blue", lwd = 2,
+plot(x, densidade, 
+     type = "l", 
+     col = "blue", 
+     lwd = 2,
      main = "Função Densidade (PDF) - Distribuição Normal",
-     xlab = "Pressão Sistólica", ylab = "Densidade - Frequência Relativa")
-
+     xlab = "Pressão Sistólica", 
+     ylab = "Densidade - Frequência Relativa")
+# A PDF responde: "Onde os dados estão concentrados?"
+# Útil para visualizar qual a faixa de pressão mais comum que seu sensor lerá.
 
 
 
@@ -119,12 +172,30 @@ x <- seq(80, 160, length.out = 100)
 probabilidade <- pnorm(x, mean = 120, sd = 10)
 
 # Plotando a curva de probabilidade
-plot(x, probabilidade, type = "l", col = "darkgreen", lwd = 2,
+plot(x, probabilidade, 
+     type = "l", 
+     col = "darkgreen", 
+     lwd = 2,
      main = "Função Probabilidade (CDF) - Distribuição Normal",
-     xlab = "Pressão Sistólica", ylab = "Probabilidade")
+     xlab = "Pressão Sistólica", 
+     ylab = "Probabilidade")
 # Aqui podemos saber qual a chance da pressão ser MENOR que x?
 # ou quantos por cento estão abaixo ou acima de x?
 
+# Desenvolvendo um alarme de hipertensão.
+# Se considerarmos Hipertensão > 140 mmHg (Sistólica), qual % da população 
+# teórica acionaria o alarme?
+
+limite_hipertensao <- 140
+
+# pnorm calcula a chance de ser MENOR que 140. 
+# Para saber MAIOR, fazemos 1 - pnorm.
+chance_hipertensao <- 1 - pnorm(limite_hipertensao, mean = 120, sd = 10)
+
+cat("Cenário de Diagnóstico:\n")
+cat("Probabilidade de um paciente aleatório ter pressão ACIMA de 140 mmHg:", 
+    round(chance_hipertensao * 100, 2), "%\n")
+# Resultado esperado: ~2.28%. Isso ajuda a estimar quantos alarmes positivos ocorrerão.
 
 
 
@@ -140,7 +211,7 @@ plot(x, probabilidade, type = "l", col = "darkgreen", lwd = 2,
 # Cenário: 10 pacientes, chance de cura 85%. Qual a distribuição das curas?
 n <- 10       # número de pacientes
 k <- 0:n      # número de acertos desejados (0 até 10)
-p <- 0.85     # probabilidade de cura
+p <- 0.95     # probabilidade de cura
 
 # Calculando a distriuição binomial do problema
 prob <- dbinom(k, size = n, prob = p)
@@ -156,8 +227,8 @@ plot(k, prob, type = "h", lwd = 5, col = "darkorange",
 
 ### Distribuição de Poisson
 # Cenário: Média de 3 atendimentos/hora. Como isso varia?
-lambda <- 3
-ocorrencias <- 0:10 # Vamos ver a chance de 0 até 10 atendimentos
+lambda <- 5
+ocorrencias <- 0:20 # Vamos ver a chance de 0 até 10 atendimentos
 
 probs_pois <- dpois(ocorrencias, lambda = lambda)
 
