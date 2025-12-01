@@ -76,6 +76,7 @@ if(teste_fisher$p.value < 0.05) {
 data(Titanic)
 # Convertendo a tabela 4D em uma tabela 2D (Classe x Sobrevivência)
 tabela_titanic <- margin.table(Titanic, c(1, 4))
+print(tabela_titanic)
 
 cat("--- Análise do Titanic ---\n")
 teste_titanic <- chisq.test(tabela_titanic)
@@ -84,8 +85,7 @@ teste_titanic <- chisq.test(tabela_titanic)
 cat("Valor-p:", format.pval(teste_titanic$p.value, digits = 4), "\n")
 
 if(teste_titanic$p.value < 0.05) {
-  cat("[ALERTA]: Dependência Forte Detectada!\n")
-  cat("A classe social do passageiro influenciou drasticamente a chance de sobrevivência.\n")
+  cat("A classe social do passageiro influenciou a chance de sobrevivência.\n")
 } else {
   cat("[OK]: Independência verificada. A classe não influenciou a sobrevivência.\n")
 }

@@ -148,7 +148,7 @@ if(p_var < 0.05) {
   cat("Teste de Variância com p =", round(p_var, 4), "- Variâncias Iguais.\n")
 }
 
-# Teste t de Welch (padrão do R quando não especificamos var.equal=TRUE)
+# Teste t de Welch (padrão do R quando não especificamos var.equal = TRUE)
 resultado <- t.test(automaticos, manuais)
 
 # Resultado

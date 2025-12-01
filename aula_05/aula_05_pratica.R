@@ -43,6 +43,7 @@ Y=β_0+β_1(altura)+ε"
 
 # 1. Carregar os dados
 data(women)
+str(women)
 head(women)  # mostra as primeiras linhas para visualização
 
 # 2. Ajuste do modelo de regressão linear simples
@@ -92,6 +93,7 @@ names(dados_estados)[names(dados_estados) == "Murder"] <- "Homicidios"
 names(dados_estados)[names(dados_estados) == "HS Grad"] <- "Educacao"
 names(dados_estados)[names(dados_estados) == "Frost"] <- "Clima"
 
+str(dados_estados)
 head(dados_estados[, c("Expectativa_Vida", "Homicidios", "Educacao", "Clima")]) # visualização
 
 # 2. Ajuste do modelo de regressão linear múltipla
@@ -164,7 +166,7 @@ betas <- coef(modelo_logistico)
 # Exponenciamos os coeficientes para transformar Log-Odds em Odds Ratio
 odds <- exp(betas)
 print(odds)
-odds_ci <- exp(confint(modelo_logistico)) 
+
 
 # 5. Interpretação automática dos coeficientes
 cat("\n--- Coeficientes do modelo e interpretação (Odds Ratio) ---\n")
@@ -237,6 +239,7 @@ previsao_carro(modelo_logistico, carro_potente)
 # Preparação dos Dados
 data(ToothGrowth)
 dados <- ToothGrowth
+str(dados)
 
 # IMPORTANTE: A dose vem como numérica, precisamos converter para Fator (categoria)
 # para que a ANOVA entenda como grupos distintos, não como regressão linear.
